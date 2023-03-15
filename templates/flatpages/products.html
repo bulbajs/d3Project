@@ -1,5 +1,6 @@
 {% extends 'flatpages/default.html' %}
 
+{% load custom_filters %}
 <!-- Название у нас будет products -->
 {% block title %}
 Products
@@ -27,7 +28,7 @@ Products
                 <td>{{product.name}}</td>
                 <td>{{product.description | truncatechars:10}}</td>
                 <td>{{product.category}}</td>
-                <td>{{product.price}}</td>
+                <td>{{product.price| currency:'usd' }}</td>
                 <td>{{product.quantity}}</td>
             </tr>
             {% endfor %}
@@ -35,4 +36,27 @@ Products
     {% else %}
         <h1>Товаров нет</h1>
     {% endif %}
+
+   {# Информация о предыдущих страницах #}
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+<!--            <a href="?page=1">&laquo; ПЕРВАЯ</a>-->
+            <a href="?page={{ page_obj.previous_page_number }}">ПРЕДЫДУЩАЯ</a>
+        {% endif %}
+
+   {# Информация о текущей странице #}
+   {{ page_obj.number }}
+
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
+
 {% endblock content %}
