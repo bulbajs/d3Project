@@ -1,6 +1,7 @@
 {% extends 'flatpages/default.html' %}
 
 {% load custom_filters %}
+{% load custom_tags %}
 <!-- Название у нас будет products -->
 {% block title %}
 Products
@@ -11,24 +12,36 @@ Products
     <h1>Все товары</h1>
     <h4>{{time_now | date:'M d Y'}}</h4>
     <hr>
+    <h3> {{ next_sale|default_if_none:"Чуть позже сообщим о распродаже!" }} </h3>
+    <form action="" method="get">
+        {{ filterset.form.as_p }}
+        <input type="submit" value="Поиск" />
+    </form>
+    <hr>
+
 <!-- Если в переменной next_sale будет None,
    то выведется указанный в фильтре текст -->
-   <h3> {{ next_sale|default_if_none:"Чуть позже сообщим о распродаже!" }} </h3>
+
     {% if products %}
-        <table border=2 bgcolor=#FAEBD7>
+        <style>
+            table {
+            width: 50%;
+            }
+        </style>
+        <table border=2 bgcolor=#F0FFF0>
           <tr>
-            <td>Название</td>
-            <td>Описание</td>
-            <td>Категория</td>
-            <td>Цена</td>
-            <td>Количество</td>
+              <td><strong>Название</strong></td>
+              <td><strong>Описание</strong></td>
+              <td><strong>Категория</strong></td>
+              <td><strong>Цена</strong></td>
+              <td><strong>Количество</strong></td>
           </tr>
             {% for product in products %}
             <tr>
                 <td>{{product.name}}</td>
                 <td>{{product.description | truncatechars:10}}</td>
                 <td>{{product.category}}</td>
-                <td>{{product.price| currency:'usd' }}</td>
+                <td>{{product.price| currency:'rub' }}</td>
                 <td>{{product.quantity}}</td>
             </tr>
             {% endfor %}
@@ -39,24 +52,26 @@ Products
 
    {# Информация о предыдущих страницах #}
 
-<div class="pagination">
-    <span class="step-links">
-        {% if page_obj.has_previous %}
-<!--            <a href="?page=1">&laquo; ПЕРВАЯ</a>-->
-            <a href="?page={{ page_obj.previous_page_number }}">ПРЕДЫДУЩАЯ</a>
-        {% endif %}
 
-   {# Информация о текущей странице #}
-   {{ page_obj.number }}
+{% if page_obj.has_previous %}
+    <a href="?{% url_replace page=1 %}"> &laquo </a>
+<!--            <a href="?page=2"> 2</a>-->
+<!--            <a href="?page=3"> 3</a>-->
+    {% if page_obj.previous_page_number != 1 %}
+        <a href="?{% url_replace page=page_obj.previous_page_number %}"> {{ page_obj.previous_page_number }} </a>
+    {% endif %}
+{% endif %}
 
-   {# Информация о следующих страницах #}
-   {% if page_obj.has_next %}
-       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
-       {% if paginator.num_pages != page_obj.next_page_number %}
-           ...
-           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
-       {% endif %}
-   {% endif %}
+{# Информация о текущей странице #}
+{{ page_obj.number }}
 
+{# Информация о следующих страницах #}
+{% if page_obj.has_next %}
+    <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+    {% if paginator.num_pages != page_obj.next_page_number %}
+        ...
+        <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+    {% endif %}
+{% endif %}
 
 {% endblock content %}

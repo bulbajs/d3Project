@@ -1,8 +1,9 @@
 from datetime import datetime
+from django.shortcuts import render
 
 from django.views.generic import ListView, DetailView
 from .models import Product
-
+from .filters import ProductFilter
 
 class ProductsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
@@ -15,7 +16,13 @@ class ProductsList(ListView):
     # Это имя списка, в котором будут лежать все объекты.
     # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'products'
-    paginate_by = 1
+    paginate_by = 2
+
+    def get_queryset(self):
+        # Получаем обычный запрос
+        queryset = super().get_queryset()
+        self.filterset = ProductFilter(self.request.GET, queryset)
+        return self.filterset.qs
 
     def get_context_data(self, **kwargs):
         # С помощью super() мы обращаемся к родительским классам
@@ -27,7 +34,8 @@ class ProductsList(ListView):
         context['time_now'] = datetime.utcnow()
         # Добавим ещё одну пустую переменную,
         # чтобы на её примере рассмотреть работу ещё одного фильтра.
-        context['next_sale'] = 'РАСПРОДАЖА 35%'
+        context['next_sale'] = 'Здесь могла быть ваша реклама'
+        context['filterset'] = self.filterset
         return context
 
 
@@ -35,3 +43,8 @@ class ProductDetail(DetailView):
     model = Product
     template_name = 'flatpages/product.html'
     context_object_name = 'product'
+
+
+# def create_product(request):
+#      return render(request,'')
+
