@@ -1,9 +1,12 @@
 from datetime import datetime
-from django.shortcuts import render
 
-from django.views.generic import ListView, DetailView
+from django.views.generic import (
+    ListView, DetailView, CreateView, UpdateView
+)
 from .models import Product
 from .filters import ProductFilter
+from .forms import ProductForm
+
 
 class ProductsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
@@ -16,7 +19,8 @@ class ProductsList(ListView):
     # Это имя списка, в котором будут лежать все объекты.
     # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'products'
-    paginate_by = 2
+    paginate_by = 4
+
 
     def get_queryset(self):
         # Получаем обычный запрос
@@ -45,6 +49,16 @@ class ProductDetail(DetailView):
     context_object_name = 'product'
 
 
+class ProductCreate(CreateView):
+    form_class = ProductForm
+    model = Product
+    template_name = 'flatpages/product_edit.html'
+
+
+class ProductUpdate(UpdateView):
+    form_class = ProductForm
+    model = Product
+    template_name = 'flatpages/product_edit.html'
+
 # def create_product(request):
 #      return render(request,'')
-

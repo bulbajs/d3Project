@@ -6,6 +6,8 @@ from .models import Product
 
 
 class ProductForm(forms.ModelForm):
+    description = forms.CharField(min_length=20)
+
     class Meta:
         model = Product
         fields = [
@@ -16,25 +18,14 @@ class ProductForm(forms.ModelForm):
             'quantity'
         ]
 
-    # def clean(self):
-    #     cleaned_data = super().clean()
-    #     description = cleaned_data.get('description')
-    #     if description is len(description) < 20:
-    #         raise ValidationError({
-    #             'description': 'Ошибка, братан'
-    #         })
-    #
-    #     return cleaned_data
-
-
     def clean(self):
         cleaned_data = super().clean()
         description = cleaned_data.get("description")
+        name = cleaned_data.get("name")
 
-        if description is not None and len(description) < 20:
-            raise ValidationError({
-                'description': "Описание не может быть менее 20 символов."
-            })
-
+        if name == description:
+            raise ValidationError(
+                "Описание не может быть идентичным."
+            )
         return cleaned_data
 

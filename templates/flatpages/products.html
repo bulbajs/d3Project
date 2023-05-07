@@ -25,7 +25,7 @@ Products
     {% if products %}
         <style>
             table {
-            width: 50%;
+            width: 120%;
             }
         </style>
         <table border=2 bgcolor=#F0FFF0>
@@ -39,7 +39,7 @@ Products
             {% for product in products %}
             <tr>
                 <td>{{product.name}}</td>
-                <td>{{product.description | truncatechars:10}}</td>
+                <td>{{product.description | truncatechars:50}}</td>
                 <td>{{product.category}}</td>
                 <td>{{product.price| currency:'rub' }}</td>
                 <td>{{product.quantity}}</td>
